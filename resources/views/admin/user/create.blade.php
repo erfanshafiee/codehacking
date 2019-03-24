@@ -22,12 +22,12 @@
 
         <div class="form-group">
             {!! Form::label("is_active","Status:") !!}
-            {!! Form::select("is_active",array(1=>"active",0php arti=>"not active"),null,["class"=>"form-control"]) !!}
+            {!! Form::select("is_active",array(1=>"active",0=>"not active"),null,["class"=>"form-control"]) !!}
         </div>
 
         <div class="form-group">
-            {!! Form::label("file","image:") !!}
-            {!! Form::file("file",null,["class"=>"form-control"]) !!}
+            {!! Form::label("Photo_id","image:") !!}
+            {!! Form::file("Photo_id",null,["class"=>"form-control"]) !!}
         </div>
 
         <div class="form-group">
