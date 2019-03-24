@@ -20,11 +20,4 @@ Route::get('/', function () {
 Route::auth();
 
 Route::get('/home', 'HomeController@index');
-
-Route::get("d",function ()
-{
-    $user=User::find(1);
-    return $user->role->name;
-
-});
 Route::resource("admin/users","AdminUsersController");
