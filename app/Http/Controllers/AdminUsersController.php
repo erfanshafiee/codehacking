@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EditPage;
 use App\Http\Requests\UserRequest;
 use App\Photo;
 use App\Role;
@@ -50,6 +51,10 @@ class AdminUsersController extends Controller
             $photo=Photo::create(["file"=>$name]);
             $input["photo_id"]=$photo->id;
         }
+        else
+        {
+            $input["photo_id"]=4;
+        }
         $input["password"]=bcrypt($request->password);
 
         User::create($input);
@@ -75,6 +80,9 @@ class AdminUsersController extends Controller
     public function edit($id)
     {
         //
+        $user=User::findOrFail($id);
+        $role=Role::lists("name","id")->all();
+        return view("admin.user.edit",compact("user","role"));
     }
 
     /**
@@ -84,9 +92,30 @@ class AdminUsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(EditPage $request, $id)
     {
         //
+        $user=User::findOrFail($id);
+        $input=$request->all();
+        if($file=$request->file("Photo_id"))
+        {
+            $name=time().$file->getClientOriginalName();
+            $file->move("images",$name);
+            $photo=Photo::create(["file"=>$name]);
+            $input["photo_id"]=$photo->id;
+        }
+        else
+        {
+            $input["photo_id"]=$user->photo_id;
+        }
+        if(!$input["password"])
+        {
+            $input["password"]=$user->password;
+        }
+        $input["password"]=bcrypt($request->password);
+
+        $user->update($input);
+        $user->save();
     }
 
     /**
