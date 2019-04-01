@@ -1,5 +1,12 @@
 @extends("layouts.admin")
 @section("content")
+
+    @if(Session::has("deleted_user"))
+
+        <p>{{Session("deleted_user")}}</p>
+        @endif
+
+
     <h1>users</h1>
     <table class="table">
         <thead>
@@ -10,8 +17,6 @@
             <th>email</th>
             <th>role</th>
             <th>status</th>
-            <th>created at</th>
-            <th>updated at</th>
             <th>edit</th>
           </tr>
         </thead>
@@ -25,8 +30,6 @@
                     <td>{{$user->email}}</td>
                     <td>{{$user->role->name}}</td>
                     <td>{{$user->is_active==1 ? "active" : "dissable"}}</td>
-                    <td>{{$user->created_at->diffForHumans()}}</td>
-                    <td>{{$user->updated_at->diffForHumans()}}</td>
                     <td><a href="{{route("admin.users.edit",$user->id)}}">edit</a></td>
                   </tr>
             @endforeach

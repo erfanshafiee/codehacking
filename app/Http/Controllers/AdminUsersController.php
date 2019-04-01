@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\User;
+use Illuminate\Support\Facades\Session;
 
 class AdminUsersController extends Controller
 {
@@ -31,7 +32,7 @@ class AdminUsersController extends Controller
      */
     public function create()
     {
-        $role=Role::lists("name","id")->all();
+        $role=Role::pluck("name","id")->all();
         return view("admin.user.create",compact("role"));
     }
 
@@ -58,6 +59,7 @@ class AdminUsersController extends Controller
         $input["password"]=bcrypt($request->password);
 
         User::create($input);
+        return redirect()->back();
     }
 
     /**
@@ -81,7 +83,7 @@ class AdminUsersController extends Controller
     {
         //
         $user=User::findOrFail($id);
-        $role=Role::lists("name","id")->all();
+        $role=Role::pluck("name","id")->all();
         return view("admin.user.edit",compact("user","role"));
     }
 
@@ -99,6 +101,10 @@ class AdminUsersController extends Controller
         $input=$request->all();
         if($file=$request->file("Photo_id"))
         {
+            if($user->photo->id!==4)
+            {
+                unlink(public_path().$user->photo->file);
+            }
             $name=time().$file->getClientOriginalName();
             $file->move("images",$name);
             $photo=Photo::create(["file"=>$name]);
@@ -116,16 +122,27 @@ class AdminUsersController extends Controller
 
         $user->update($input);
         $user->save();
+        return redirect()->back();
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|string
      */
     public function destroy($id)
     {
-        //
+        Session::flash("deleted_user","the user has been deleted");
+        $user=User::findOrFail($id);
+        if($user->photo->id!==4)
+        {
+            unlink(public_path().$user->photo->file);
+        }
+
+        $user->delete();
+
+
+        return redirect("/admin/users");
     }
 }
